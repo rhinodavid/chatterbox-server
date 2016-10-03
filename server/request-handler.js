@@ -44,11 +44,11 @@ var requestHandler = function(request, response) {
 
 
   } else {
-    statusCode = 200;
+    statusCode = 404;
     headers = defaultCorsHeaders;
     headers['Content-Type'] = 'text/plain';
     response.writeHead(statusCode, headers);
-    response.end('Hello, World!');
+    response.end('404: Endpoint not found.');
   }
 
 };
