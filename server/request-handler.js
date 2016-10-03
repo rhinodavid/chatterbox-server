@@ -1,33 +1,51 @@
+'use strict';
+
 const url = require('url');
 var defaultCorsHeaders;
 
-var chats = [{roomname: 'lobby', username: 'tester', createdAt: '2016-10-03T18:46:16.210Z', updatedAt: '2016-10-03T18:46:16.210Z', text: 'Message text here.'}];
+var chats = [];
 
 var requestHandler = function(request, response) {
 
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
   const parsedUrl = url.parse(request.url);
-
-  if (parsedUrl.path === '/classes/messages' && request.method === 'GET') {
+  let statusCode;
+  let headers;
+  if (parsedUrl.pathname === '/classes/messages' && request.method === 'GET') {
     // return saved messages
-    const statusCode = 200;
-    const headers = defaultCorsHeaders;
-    headers['Content-Type'] = 'text/json';
+    statusCode = 200;
+    headers = defaultCorsHeaders;
+    headers['Content-Type'] = 'application/json';
     response.writeHead(statusCode, headers);
     response.end(JSON.stringify({results: chats}));
-  } else if (parsedUrl.path === '/classes/messages' && request.method === 'POST') {
-    const statusCode = 200;
-    const headers = defaultCorsHeaders;
-    headers['Content-Type'] = 'text/json';
+  } else if (parsedUrl.pathname === '/classes/messages' && request.method === 'POST') {
+    statusCode = 201;
+    headers = defaultCorsHeaders;
+    headers['Content-Type'] = 'application/json';
     response.writeHead(statusCode, headers);
-    
-    debugger;
+    var body = [];
+    request.on('data', function(chunk) {
+      body.push(chunk);
+    }).on('end', function() {
+      body = Buffer.concat(body).toString();
+      //Create a message object
+      body = JSON.parse(body);
+      var message = {};
+      message.text = body.text;
+      message.username = body.username || 'User';
+      message.roomname = body.roomname || 'lobby';
+      message.createdAt = new Date();
+      message.updatedAt = message.createdAt;
+      message.objectId = chats.length;
+      chats.unshift(message);
+      response.end(JSON.stringify({createdAt: message.createdAt, objectId: message.objectId}));
+    });
 
 
   } else {
-    var statusCode = 200;
-    var headers = defaultCorsHeaders;
+    statusCode = 200;
+    headers = defaultCorsHeaders;
     headers['Content-Type'] = 'text/plain';
     response.writeHead(statusCode, headers);
     response.end('Hello, World!');
