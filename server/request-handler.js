@@ -27,8 +27,9 @@ var requestHandler = function(request, response) {
     var body = [];
     request.on('data', function(chunk) {
       body.push(chunk);
-    }).on('end', function() {
-      body = Buffer.concat(body).toString();
+    });
+    request.on('end', function() {
+      body = body.join('');//Buffer.concat(body).toString();
       //Create a message object
       body = JSON.parse(body);
       var message = {};
@@ -41,8 +42,11 @@ var requestHandler = function(request, response) {
       chats.unshift(message);
       response.end(JSON.stringify({createdAt: message.createdAt, objectId: message.objectId}));
     });
-
-
+  } else if (parsedUrl.pathname === '/classes/messages' && request.method === 'OPTIONS') {
+    statusCode = 200;
+    headers = defaultCorsHeaders;
+    response.writeHead(statusCode, headers);
+    response.end();
   } else {
     statusCode = 404;
     headers = defaultCorsHeaders;
@@ -64,10 +68,10 @@ var requestHandler = function(request, response) {
 // client from this domain by setting up static file serving.
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'access-control-allow-methods': 'GET, POST, OPTIONS',
   'access-control-allow-headers': 'content-type, accept',
   'access-control-max-age': 10 // Seconds.
 };
 
 
-module.exports = requestHandler;
+module.exports.requestHandler = requestHandler;
