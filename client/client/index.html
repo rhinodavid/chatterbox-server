@@ -8,7 +8,6 @@
     <!-- dependencies -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script>
-      // YOU DO NOT NEED TO EDIT THIS CODE
       if (!/(&|\?)username=/.test(window.location.search)) {
         var newSearch = window.location.search;
         if (newSearch !== '' & newSearch !== '?') {
@@ -24,7 +23,6 @@
   <body>
     <div id="main">
       <h1>chatterbox</h1>
-      <!-- Your HTML goes here! -->
 
       <div class="spinner"><img src="images/spiffygif_46x46.gif"></div>
       <div id="rooms">
@@ -35,12 +33,15 @@
       <form action="#" id="send" method="post">
         <input type="text" name="message" id="message"/>
         <input type="submit" name="submit" class="submit"/>
-      </form>    </div>
+      </form>
+    </div>
     <div id="chats"></div>
 
     <script>
-      $(function(){
-        app.init()
+      $(function() {
+        app.init();
       });
-    </script>  </body>
+    </script>
+
+  </body>
 </html>
