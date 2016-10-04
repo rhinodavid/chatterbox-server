@@ -1,6 +1,7 @@
 'use strict';
 
 const url = require('url');
+const fs = require('fs');
 var defaultCorsHeaders;
 
 var chats = [];
@@ -47,6 +48,24 @@ var requestHandler = function(request, response) {
     headers = defaultCorsHeaders;
     response.writeHead(statusCode, headers);
     response.end();
+  } else if (request.method === 'GET') {
+    debugger;
+    var path = parsedUrl.pathname === '/' ? './client/client/index.html' : './client/client' + parsedUrl.pathname;
+    fs.readFile(path, (err, data) => {
+      if (err) {
+        statusCode = 404;
+        headers = defaultCorsHeaders;
+        headers['Content-Type'] = 'text/plain';
+        response.writeHead(statusCode, headers);
+        response.end('404: File not found');
+      } else {
+        statusCode = 200;
+        headers = defaultCorsHeaders;
+        // headers['Content-Type'] = 'text/plain';
+        response.writeHead(statusCode, headers);
+        response.end(data);
+      }
+    });
   } else {
     statusCode = 404;
     headers = defaultCorsHeaders;
