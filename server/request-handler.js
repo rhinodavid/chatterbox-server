@@ -7,7 +7,7 @@ var chats = [];
 
 var Message = function(body) {
   this.text = body.text;
-  this.username = body.username || 'User';
+  this.username = body.username || 'anonymous';
   this.roomname = body.roomname || 'lobby';
   this.createdAt = new Date();
   this.updatedAt = this.createdAt;
@@ -41,22 +41,31 @@ var requestHandler = function(request, response) {
     headers['Content-Type'] = 'application/json';
     response.writeHead(200, headers);
     response.end(JSON.stringify({results: chats}));
+
   } else if (parsedUrl.pathname === '/classes/messages' && request.method === 'POST') {
-    headers['Content-Type'] = 'application/json';
-    response.writeHead(201, headers);
     var body = [];
     request.on('data', chunk => {
       body.push(chunk);
     });
     request.on('end', () => {
-      body = body.join('');
-      body = JSON.parse(body);
-      chats.unshift(new Message(body));
-      response.end(JSON.stringify({createdAt: chats[0].createdAt, objectId: chats[0].objectId}));
+      try {
+        body = body.join('');
+        body = JSON.parse(body);
+        headers['Content-Type'] = 'application/json';
+        response.writeHead(201, headers);
+        chats.unshift(new Message(body));
+        response.end(JSON.stringify({createdAt: chats[0].createdAt, objectId: chats[0].objectId}));
+      } catch (e) {
+        headers['Content-Type'] = 'text/plain';
+        response.writeHead(400, headers);
+        response.end('Invalid request.');
+      }
     });
+
   } else if (parsedUrl.pathname === '/classes/messages' && request.method === 'OPTIONS') {
     response.writeHead(200, Object.assign({}, headers, {'Allow': 'GET, POST, OPTIONS'}));
     response.end();
+
   } else if (request.method === 'GET') {
     var path = parsedUrl.pathname === '/' ? './client/client/index.html' : './client/client' + parsedUrl.pathname;
     fs.readFile(path, (err, data) => {
@@ -70,6 +79,7 @@ var requestHandler = function(request, response) {
         response.end(data);
       }
     });
+
   } else {
     headers['Content-Type'] = 'text/plain';
     response.writeHead(404, headers);
@@ -81,12 +91,7 @@ var requestHandler = function(request, response) {
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
 // are on different domains, for instance, your chat client.
-//
-// Your chat client is running from a url like file://your/chat/client/index.html,
-// which is considered a different domain.
-//
-// Another way to get around this restriction is to serve you chat
-// client from this domain by setting up static file serving.
+
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET, POST, OPTIONS',

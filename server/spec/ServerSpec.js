@@ -181,4 +181,5 @@ describe('Chat client file serving', function() {
         expect(res._headers['Content-Type']).to.equal('text/javascript');
       });
   });
+  
 });
