@@ -6,6 +6,22 @@ var defaultCorsHeaders;
 
 var chats = [];
 
+var getContentType = function(pathname) {
+  var types = {
+    css: 'text/css',
+    js: 'text/javascript',
+    jsx: 'text/javascript',
+    html: 'text/html',
+    json: 'application/json',
+    jpeg: 'image/jpeg',
+    jpg: 'image/jpeg',
+    png: 'image/png',
+    ico: 'image/x-icon'
+  };
+  const extension = pathname.split('.').slice(-1)[0];
+  return types[extension] || null;
+};
+
 var requestHandler = function(request, response) {
 
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
@@ -61,7 +77,7 @@ var requestHandler = function(request, response) {
       } else {
         statusCode = 200;
         headers = defaultCorsHeaders;
-        // headers['Content-Type'] = 'text/plain';
+        headers['Content-Type'] = getContentType(path) || 'text/plain';
         response.writeHead(statusCode, headers);
         response.end(data);
       }

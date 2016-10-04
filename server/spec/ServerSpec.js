@@ -143,4 +143,28 @@ describe('Chat client file serving', function() {
         expect(match.length).to.be.above(0);
       });
   });
+
+  it('should set a css Content-Type when serving stylesheets', function() {
+    var req = new stubs.request('/styles/styles.css', 'GET');
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+    waitForThen(
+      function() { return res._ended; },
+      function() {
+        expect(res._headers['Content-Type']).to.equal('text/css');
+      });
+  });
+
+  it('should set a javascript Content-Type when serving javascript files', function() {
+    var req = new stubs.request('/scripts/app.js', 'GET');
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+    waitForThen(
+      function() { return res._ended; },
+      function() {
+        expect(res._headers['Content-Type']).to.equal('text/javascript');
+      });
+  });
 });
