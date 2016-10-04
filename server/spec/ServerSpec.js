@@ -115,6 +115,20 @@ describe('Node Server Request Listener Function', function() {
       });
   });
 
+  it('Should respond with an allow header for OPTIONS requests', function() {
+    var req = new stubs.request('/classes/messages', 'OPTIONS');
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    // Wait for response to return and then check status code
+    waitForThen(
+      function() { return res._ended; },
+      function() {
+        expect(res._headers.Allow).to.equal('GET, POST, OPTIONS');
+      });
+  });
+
 });
 
 describe('Chat client file serving', function() {

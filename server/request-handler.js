@@ -55,7 +55,7 @@ var requestHandler = function(request, response) {
       response.end(JSON.stringify({createdAt: chats[0].createdAt, objectId: chats[0].objectId}));
     });
   } else if (parsedUrl.pathname === '/classes/messages' && request.method === 'OPTIONS') {
-    response.writeHead(200, headers);
+    response.writeHead(200, Object.assign({}, headers, {'Allow': 'GET, POST, OPTIONS'}));
     response.end();
   } else if (request.method === 'GET') {
     var path = parsedUrl.pathname === '/' ? './client/client/index.html' : './client/client' + parsedUrl.pathname;
