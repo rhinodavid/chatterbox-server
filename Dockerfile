@@ -13,6 +13,8 @@ RUN npm install --production
 
 COPY . /src/usr/app
 
+RUN npm run postinstall
+
 EXPOSE 3000
 
 CMD ["npm", "start"]
